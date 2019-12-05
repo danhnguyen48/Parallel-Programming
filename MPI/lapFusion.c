@@ -34,7 +34,7 @@ void laplace_init(float *in, int n, int nprocs, int me)
   int i;
   const float pi  = 2.0f * asinf(1.0f);
   int block_size  = (int)(n/nprocs);
-  memset(in, 0, block_size*n*sizeof(float));
+  memset(in, 0, (block_size+2)*n*sizeof(float));
   
   int source = me * block_size;
   int destination = me * block_size + block_size;
@@ -42,6 +42,13 @@ void laplace_init(float *in, int n, int nprocs, int me)
   for (i=source; i<destination; i++) {
     float V = in[(i % block_size)*n] = sinf(pi*i / (n-1));
     in[ (i % block_size)*n+n-1 ] = V*expf(-pi);
+    if (i == source) {
+      in[block_size*n] = V;
+      in[block_size*n+n-1] = V*expf(-pi);
+    } else if (i == destination - 1) {
+      in[(block_size+1)*n] = V;
+      in[(block_size+1)*n+n-1] = V*expf(-pi);
+    }
   }
 }
 
@@ -66,7 +73,6 @@ int main(int argc, char** argv)
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &me);
   
-  printf("size = %d\n", nprocs);
   printf("i am number = %d\n", me);
   
   float *A, *temp;
@@ -77,14 +83,13 @@ int main(int argc, char** argv)
   int last_mes_index 	= block_size;
   int first_mes_index 	= block_size + 1;
 
-  MPI_Status status;
+  MPI_Request firstRowRequest, lastRowRequest;
+  MPI_Status firstRowStatus, lastRowStatus;
 
   // we assumed that the row at block_size position will be data receiving from last row of the previous matrix
   // the row at block_size + 1 position will be data receiving from first row of the next matrix
   A    = (float*) malloc( (block_size+2)*n*sizeof(float) );
-  temp = (float*) malloc( (block_size+2)*n*sizeof(float) );
-
- 
+  temp = (float*) malloc( (block_size+2)*n*sizeof(float) ); 
 
   //  set boundary conditions
   laplace_init (A, n, nprocs, me);
@@ -93,24 +98,27 @@ int main(int argc, char** argv)
 
   printf("Jacobi relaxation Calculation: %d x %d mesh,"
          " maximum of %d iterations\n", 
-         n, n, iter_max );
+        block_size, n, iter_max );
          
   int iter = 0;
+  
   while ( error > tol*tol && iter < iter_max )
   {
     iter++;
     if (me > 0) {
       // send first row and receive last row from the previous processor
-      MPI_Send(*A, n, MPI_DOUBLE, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD);
-      MPI_Recv(*A + block_size*n, n, MPI_DOUBLE, me - 1, 0, MPI_COMM_WORLD, &status);
+      MPI_Send(A, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD);
+      MPI_Irecv(A + block_size*n, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD, &firstRowRequest);
+      MPI_Wait(&firstRowRequest, &firstRowStatus);
     }
     if (me < nprocs - 1) {
       // send last row and receive first row from the next processor
-      MPI_Send(*A + (block_size-1)*n, n, MPI_DOUBLE, MPI_ANY_SOURCE, 0, MPI_COM_WORLD);
-      MPI_Recv(*A + (block_size+1)*n, n, MPI_DOUBLE, me + 1, 0, MPI_COMM_WORLD, &status);
+      MPI_Irecv(A + (block_size+1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD, &lastRowRequest);
+      MPI_Send(A + (block_size-1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD);
+      MPI_Wait(&lastRowRequest, &lastRowStatus);
     }
-    error= laplace_step (A, temp, n);
-    float *swap= A; A=temp; temp= swap; // swap pointers A & temp
+    // error= laplace_step (A, temp, n);
+    // float *swap= A; A=temp; temp= swap; // swap pointers A & temp
   }
   error = sqrtf( error );
   printf("Total Iterations: %5d, ERROR: %0.6f, ", iter, error);
