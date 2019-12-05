@@ -77,6 +77,10 @@ int main(int argc, char** argv)
   int last_mes_index 	= block_size;
   int first_mes_index 	= block_size + 1;
 
+  MPI_Status status;
+
+  // we assumed that the row at block_size position will be data receiving from last row of the previous matrix
+  // the row at block_size + 1 position will be data receiving from first row of the next matrix
   A    = (float*) malloc( (block_size+2)*n*sizeof(float) );
   temp = (float*) malloc( (block_size+2)*n*sizeof(float) );
 
@@ -95,6 +99,16 @@ int main(int argc, char** argv)
   while ( error > tol*tol && iter < iter_max )
   {
     iter++;
+    if (me > 0) {
+      // send first row and receive last row from the previous processor
+      MPI_Send(*A, n, MPI_DOUBLE, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD);
+      MPI_Recv(*A + block_size*n, n, MPI_DOUBLE, me - 1, 0, MPI_COMM_WORLD, &status);
+    }
+    if (me < nprocs - 1) {
+      // send last row and receive first row from the next processor
+      MPI_Send(*A + (block_size-1)*n, n, MPI_DOUBLE, MPI_ANY_SOURCE, 0, MPI_COM_WORLD);
+      MPI_Recv(*A + (block_size+1)*n, n, MPI_DOUBLE, me + 1, 0, MPI_COMM_WORLD, &status);
+    }
     error= laplace_step (A, temp, n);
     float *swap= A; A=temp; temp= swap; // swap pointers A & temp
   }
