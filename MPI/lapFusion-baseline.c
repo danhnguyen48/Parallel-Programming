@@ -67,19 +67,12 @@ int main(int argc, char** argv)
          " maximum of %d iterations\n", 
          n, n, iter_max );
 
-for (int i=0; i<n; i++) {
-		  for (int j=0; j<n; j++) {
-			  printf("%.4f ", A[i*n+j]);
-		  }
-		  printf("\ni = %d\n", i);
-	  }
-	return 0;
-
   int iter = 0;
   while ( error > tol*tol && iter < iter_max )
   {
     iter++;
     error= laplace_step (A, temp, n);
+    if (iter == 1) printf("error ne: %.6f\n", error);
     float *swap= A; A=temp; temp= swap; // swap pointers A & temp
   }
   error = sqrtf( error );

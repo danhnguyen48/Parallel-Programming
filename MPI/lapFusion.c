@@ -15,15 +15,30 @@ float max_error ( float prev_error, float old, float new )
   return t>prev_error? t: prev_error;
 }
 
-float laplace_step(float *in, float *out, int n)
+float laplace_step(float *in, float *out, int n, int nprocs, int me)
 {
   int i, j;
   float error=0.0f;
-  for ( j=1; j < n-1; j++ )
-    for ( i=1; i < n-1; i++ )
+
+  int block_size  = (int)(n/nprocs);  
+  int source = 0;
+  int destination = block_size;
+
+  // Check if me == fisrt matrix, source = 1
+  // me == last matrix, destination = block_size - 1;
+  if (me == 0) {
+    source = 1;
+  } else if (me == nprocs - 1) {
+    destination = block_size - 1;
+  }
+
+  for ( i=source; i < destination; i++ )
+    for ( j=1; j < n-1; j++ )
     {
-      out[j*n+i]= stencil(in[j*n+i+1], in[j*n+i-1], in[(j-1)*n+i], in[(j+1)*n+i]);
-      error = max_error( error, out[j*n+i], in[j*n+i] );
+      float aboveE = i == 0 ? in[block_size*n + j] : in[(i-1)*n + j];
+      float belowE = i == block_size - 1 ? in[(block_size+1)*n + j] : in[(i+1)*n + j];
+      out[i*n+j]= stencil(in[i*n+j+1], in[i*n+j-1], aboveE, belowE);
+      error = max_error( error, out[i*n+j], in[i*n+j] );
     }
   return error;
 }
@@ -101,7 +116,8 @@ int main(int argc, char** argv)
         block_size, n, iter_max );
          
   int iter = 0;
-  
+  float my_error = 0;  
+
   while ( error > tol*tol && iter < iter_max )
   {
     iter++;
@@ -117,16 +133,24 @@ int main(int argc, char** argv)
       MPI_Send(A + (block_size-1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD);
       MPI_Wait(&lastRowRequest, &lastRowStatus);
     }
-    // error= laplace_step (A, temp, n);
-    // float *swap= A; A=temp; temp= swap; // swap pointers A & temp
+   my_error= laplace_step (A, temp, n, nprocs, me);   
+//    error = max_error(error, 0, my_error); 
+    float *swap= A; A=temp; temp= swap; // swap pointers A & temp
+    MPI_Barrier(MPI_COMM_WORLD);
   }
-  error = sqrtf( error );
-  printf("Total Iterations: %5d, ERROR: %0.6f, ", iter, error);
-  printf("A[%d][%d]= %0.6f\n", n/128, n/128, A[(n/128)*n+n/128]);
 
   free(A); free(temp);
+
+  MPI_Barrier(MPI_COMM_WORLD);
   
   err=MPI_Finalize();
   //check finalization
+
+  if (me == 0) {
+    error = sqrtf( error );
+    printf("Total Iterations: %5d, ERROR: %0.6f, ", iter, error);
+    printf("A[%d][%d]= %0.6f\n", n/128, n/128, A[(n/128)*n+n/128]);
+  }
+  
   return 0;
 }
