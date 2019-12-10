@@ -73,34 +73,25 @@ int main(int argc, char** argv)
   int iter_max = 1000;
   
   const float tol = 1.0e-5f;
-  float error= 1.0f;    
-  
-  int err, me, nprocs;
-  
-  
 
-  // get runtime arguments 
-  if (argc>1) {  n        = atoi(argv[1]); }
-  if (argc>2) {  iter_max = atoi(argv[2]); }
-
-  err=MPI_Init( &argc, &argv );
-  //check succesful initialization of MPI
-  MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
-  MPI_Comm_rank(MPI_COMM_WORLD, &me);
-  
-  printf("i am number = %d\n", me);
-  
   float *A, *temp;
-  
-  int block_size 		= (int)(n/nprocs);
-  int fr_index   		= 0;
-  int lr_index   		= block_size - 1;
-  int last_mes_index 	= block_size;
-  int first_mes_index 	= block_size + 1;
 
   MPI_Request firstRowRequest, lastRowRequest;
   MPI_Status firstRowStatus, lastRowStatus;
 
+  int err, me, nprocs;
+  
+  // get runtime arguments 
+  if (argc>1) {  n        = atoi(argv[1]); }
+  if (argc>2) {  iter_max = atoi(argv[2]); }
+
+  MPI_Init( &argc, &argv );
+
+  MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+  MPI_Comm_rank(MPI_COMM_WORLD, &me);
+
+  int block_size                = (int)(n/nprocs);
+  
   // we assumed that the row at block_size position will be data receiving from last row of the previous matrix
   // the row at block_size + 1 position will be data receiving from first row of the next matrix
   A    = (float*) malloc( (block_size+2)*n*sizeof(float) );
@@ -111,14 +102,14 @@ int main(int argc, char** argv)
   laplace_init (temp, n, nprocs, me);
   //  A[(n/128)*n+n/128] = 1.0f; // set singular point
 
-  printf("Jacobi relaxation Calculation: %d x %d mesh,"
+  printf("Processor %d is running Jacobi relaxation Calculation: %d x %d mesh,"
          " maximum of %d iterations\n", 
-        block_size, n, iter_max );
+        me, block_size, n, iter_max );
          
   int iter = 0;
-  float my_error = 0;  
+  float my_error = 1.0f;
 
-  while ( error > tol*tol && iter < iter_max )
+  while ( my_error > tol*tol && iter < iter_max )
   {
     iter++;
     if (me > 0) {
@@ -133,23 +124,32 @@ int main(int argc, char** argv)
       MPI_Send(A + (block_size-1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD);
       MPI_Wait(&lastRowRequest, &lastRowStatus);
     }
-   my_error= laplace_step (A, temp, n, nprocs, me);   
-//    error = max_error(error, 0, my_error); 
+    my_error= laplace_step (A, temp, n, nprocs, me);   
     float *swap= A; A=temp; temp= swap; // swap pointers A & temp
     MPI_Barrier(MPI_COMM_WORLD);
   }
 
   free(A); free(temp);
 
+  if (me > 0) {
+    MPI_Send(&my_error, 1, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
+  } else if (me == 0) {
+    float receiver;
+    for (int iMe=1; iMe<nprocs; iMe++) {
+      MPI_Irecv(&receiver, 1, MPI_FLOAT, iMe, 0, MPI_COMM_WORLD, &lastRowRequest);
+      MPI_Wait(&lastRowRequest, &lastRowStatus);
+      my_error = max_error(my_error, 0, receiver);
+    }
+  }
+
   MPI_Barrier(MPI_COMM_WORLD);
-  
+
   err=MPI_Finalize();
   //check finalization
 
   if (me == 0) {
-    error = sqrtf( error );
-    printf("Total Iterations: %5d, ERROR: %0.6f, ", iter, error);
-    printf("A[%d][%d]= %0.6f\n", n/128, n/128, A[(n/128)*n+n/128]);
+    my_error = sqrtf( my_error );
+    printf("Total Iterations: %5d, ERROR: %0.6f\n", me, iter, my_error);
   }
   
   return 0;
