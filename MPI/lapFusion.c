@@ -69,6 +69,8 @@ void laplace_init(float *in, int n, int nprocs, int me)
 
 int main(int argc, char** argv)
 { 
+  
+  double t_before, t_after;
   int n = 4096;
   int iter_max = 1000;
   
@@ -86,6 +88,8 @@ int main(int argc, char** argv)
   if (argc>2) {  iter_max = atoi(argv[2]); }
 
   MPI_Init( &argc, &argv );
+
+  t_before = MPI_Wtime();
 
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &me);
@@ -149,7 +153,9 @@ int main(int argc, char** argv)
 
   if (me == 0) {
     my_error = sqrtf( my_error );
-    printf("Total Iterations: %5d, ERROR: %0.6f\n", me, iter, my_error);
+    printf("Total Iterations: %d, ERROR: %0.6f\n", iter, my_error);
+    t_after = MPI_Wtime();
+    printf("Total seconds the program took: %f\n", t_after - t_before);
   }
   
   return 0;
