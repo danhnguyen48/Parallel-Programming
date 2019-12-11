@@ -66,7 +66,7 @@ int main(int argc, char** argv)
   //  set boundary conditions
   laplace_init (A, n);
   laplace_init (temp, n);
-  A[(n/128)*n+n/128] = 1.0f; // set singular point
+  // A[(n/128)*n+n/128] = 1.0f; // set singular point
 
   printf("Jacobi relaxation Calculation: %d x %d mesh,"
          " maximum of %d iterations\n", 
