@@ -70,7 +70,7 @@ void laplace_init(float *in, int n, int nprocs, int me)
 int main(int argc, char** argv)
 { 
   
-  double t_before, t_after;
+  double t_before, t_after; //to measure the elapsed time
   int n = 4096;
   int iter_max = 1000;
   
@@ -86,14 +86,16 @@ int main(int argc, char** argv)
   // get runtime arguments 
   if (argc>1) {  n        = atoi(argv[1]); }
   if (argc>2) {  iter_max = atoi(argv[2]); }
-
+  
+  //initialization and management of MPI communication
   MPI_Init( &argc, &argv );
 
   t_before = MPI_Wtime();
 
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &me);
-
+  
+  //small matrix size definition
   int block_size                = (int)(n/nprocs);
   
   // we assumed that the row at block_size position will be data receiving from last row of the previous matrix
@@ -130,14 +132,17 @@ int main(int argc, char** argv)
     }
     my_error= laplace_step (A, temp, n, nprocs, me);   
     float *swap= A; A=temp; temp= swap; // swap pointers A & temp
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD); //need each process to wait to properly start the next iteration in the A-calculus
   }
 
-  free(A); free(temp);
-
+  free(A); free(temp); //QUESTION: shouldn't we keep these values as a part of the final result?
+  
+  //total error calculation
   if (me > 0) {
+    //send the local error of these processes to the process number 0
     MPI_Send(&my_error, 1, MPI_FLOAT, 0, 0, MPI_COMM_WORLD);
   } else if (me == 0) {
+    //receiving all the local errors and calculating the global one as their max
     float receiver;
     for (int iMe=1; iMe<nprocs; iMe++) {
       MPI_Irecv(&receiver, 1, MPI_FLOAT, iMe, 0, MPI_COMM_WORLD, &lastRowRequest);
@@ -146,11 +151,11 @@ int main(int argc, char** argv)
     }
   }
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(MPI_COMM_WORLD); //needed sincronization before calling MPI_Finalize
 
   err=MPI_Finalize();
+  
   //check finalization
-
   if (me == 0) {
     my_error = sqrtf( my_error );
     printf("Total Iterations: %d, ERROR: %0.6f\n", iter, my_error);
