@@ -8,4 +8,4 @@
 module load openmpi/3.0.0
 module add gcc/8.2.0
 
-mpirun -n 12 ./lap_mpi 2048
+mpirun -n 12 ./lap_mpi 1024
