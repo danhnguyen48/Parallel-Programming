@@ -42,8 +42,6 @@ float laplace_step(float *in, float *out, int n, int nprocs, int me, bool isInne
     if (isInner == false) step--;
   }
 
-//  printf("me: %d, source: %d, destination: %d, step: %d\n",me,source,destination,step);
-
   int ri = block_size*n; // above row of sub matrix
   int rf = (block_size+1)*n; // below row of sub matrix
 
@@ -142,7 +140,7 @@ int main(int argc, char** argv)
       MPI_Isend(A + (block_size-1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD, &lastRowSendRequest);
     }
 
-    // calculate inner values other than me = 0 in waiting time
+    // calculate inner values in waiting time
     my_error= laplace_step (A, temp, n, nprocs, me, true);
 
     if (me != 0) {
