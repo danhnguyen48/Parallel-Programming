@@ -16,32 +16,24 @@ float max_error ( float prev_error, float old, float new )
   return t>prev_error? t: prev_error;
 }
 
-float laplace_step(float *in, float *out, int n, int nprocs, int me, bool isInner)
+float laplace_step(float *in, float *out, int n, int nprocs, int me)
 {
   int i, j;
   float error=0.0f;
 
   int block_size  = (int)(n/nprocs);  
-  int source = isInner == true ? 1 : 0;
-  int destination = isInner == true ? block_size - 1 : block_size;
-  int step = isInner == true ? 1 : block_size - 1;
+  int source = 0;
+  int destination = block_size;
 
   // Check if me == fisrt matrix, source = 1
   // me == last matrix, destination = block_size - 1;
   if (me == 0) {
-    source++;
-    if (isInner == false) step--;
+    source = 1;
   } else if (me == nprocs - 1) {
-    destination--;
-    if (isInner == false) step--;
+    destination = block_size - 1;
   }
 
-//  printf("me: %d, source: %d, destination: %d, step: %d\n",me,source,destination,step);
-
-  int ri = block_size*n; // above row of sub matrix
-  int rf = (block_size+1)*n; // below row of sub matrix
-
-  for ( i=source; i < destination; i+=step )
+  for ( i=source; i < destination; i++ )
     for ( j=1; j < n-1; j++ )
     {
       float aboveE = i == 0 ? in[block_size*n + j] : in[(i-1)*n + j];
@@ -49,10 +41,8 @@ float laplace_step(float *in, float *out, int n, int nprocs, int me, bool isInne
       out[i*n+j]= stencil(in[i*n+j+1], in[i*n+j-1], aboveE, belowE);
       error = max_error( error, out[i*n+j], in[i*n+j] );
     }
-
   return error;
 }
-
 
 void laplace_init(float *in, int n, int nprocs, int me)
 {
@@ -130,23 +120,15 @@ int main(int argc, char** argv)
       // send first row and receive last row from the previous processor
       MPI_Send(A, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD);
       MPI_Irecv(A + block_size*n, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD, &firstRowRequest);
+      MPI_Wait(&firstRowRequest, &firstRowStatus);
     }
     if (me < nprocs - 1) {
       // send last row and receive first row from the next processor
       MPI_Irecv(A + (block_size+1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD, &lastRowRequest);
       MPI_Send(A + (block_size-1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD);
-    }
-
-    my_error= laplace_step (A, temp, n, nprocs, me, true);
-    
-    if (me != 0)
-      MPI_Wait(&firstRowRequest, &firstRowStatus);
-    if (me != nprocs-1)
       MPI_Wait(&lastRowRequest, &lastRowStatus);
-
-    // have to calculate my_error by finding max_error because we already have my_error from calculating inner above
-    my_error= max_error(my_error, laplace_step (A, temp, n, nprocs, me, false), 0);
-
+    }
+    my_error= laplace_step (A, temp, n, nprocs, me);   
     float *swap= A; A=temp; temp= swap; // swap pointers A & temp
     MPI_Barrier(MPI_COMM_WORLD);
   }
