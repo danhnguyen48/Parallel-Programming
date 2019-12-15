@@ -1,14 +1,71 @@
-Processor 9 is running Jacobi relaxation Calculation: 170 x 2048 mesh, maximum of 1000 iterations
-Processor 11 is running Jacobi relaxation Calculation: 170 x 2048 mesh, maximum of 1000 iterations
-Processor 10 is running Jacobi relaxation Calculation: 170 x 2048 mesh, maximum of 1000 iterations
-Processor 1 is running Jacobi relaxation Calculation: 170 x 2048 mesh, maximum of 1000 iterations
-Processor 3 is running Jacobi relaxation Calculation: 170 x 2048 mesh, maximum of 1000 iterations
-Processor 5 is running Jacobi relaxation Calculation: 170 x 2048 mesh, maximum of 1000 iterations
-Processor 7 is running Jacobi relaxation Calculation: 170 x 2048 mesh, maximum of 1000 iterations
-Processor 2 is running Jacobi relaxation Calculation: 170 x 2048 mesh, maximum of 1000 iterations
-Processor 0 is running Jacobi relaxation Calculation: 170 x 2048 mesh, maximum of 1000 iterations
-Processor 4 is running Jacobi relaxation Calculation: 170 x 2048 mesh, maximum of 1000 iterations
-Processor 6 is running Jacobi relaxation Calculation: 170 x 2048 mesh, maximum of 1000 iterations
-Processor 8 is running Jacobi relaxation Calculation: 170 x 2048 mesh, maximum of 1000 iterations
-Total Iterations: 1000, ERROR: 0.015552
-Total seconds the program took: 14.663242
+Processor 0 is running Jacobi relaxation Calculation: 85 x 1024 mesh, maximum of 1000 iterations
+Processor 11 is running Jacobi relaxation Calculation: 85 x 1024 mesh, maximum of 1000 iterations
+Processor 10 is running Jacobi relaxation Calculation: 85 x 1024 mesh, maximum of 1000 iterations
+Processor 8 is running Jacobi relaxation Calculation: 85 x 1024 mesh, maximum of 1000 iterations
+Processor 2 is running Jacobi relaxation Calculation: 85 x 1024 mesh, maximum of 1000 iterations
+Processor 7 is running Jacobi relaxation Calculation: 85 x 1024 mesh, maximum of 1000 iterations
+Processor 4 is running Jacobi relaxation Calculation: 85 x 1024 mesh, maximum of 1000 iterations
+Processor 6 is running Jacobi relaxation Calculation: 85 x 1024 mesh, maximum of 1000 iterations
+Processor 1 is running Jacobi relaxation Calculation: 85 x 1024 mesh, maximum of 1000 iterations
+Processor 3 is running Jacobi relaxation Calculation: 85 x 1024 mesh, maximum of 1000 iterations
+Processor 9 is running Jacobi relaxation Calculation: 85 x 1024 mesh, maximum of 1000 iterations
+Processor 5 is running Jacobi relaxation Calculation: 85 x 1024 mesh, maximum of 1000 iterations
+me: 0, source: 2, destination: 84, step: 1
+me: 11, source: 1, destination: 83, step: 1
+me: 1, source: 1, destination: 84, step: 1
+me: 2, source: 1, destination: 84, step: 1
+me: 3, source: 1, destination: 84, step: 1
+me: 4, source: 1, destination: 84, step: 1
+me: 5, source: 1, destination: 84, step: 1
+me: 6, source: 1, destination: 84, step: 1
+me: 7, source: 1, destination: 84, step: 1
+me: 8, source: 1, destination: 84, step: 1
+me: 9, source: 1, destination: 84, step: 1
+me: 10, source: 1, destination: 84, step: 1
+[clus12:52931] *** Process received signal ***
+me: 2, source: 0, destination: 85, step: 84
+[clus12:52931] Signal: Segmentation fault (11)
+[clus12:52931] Signal code: Address not mapped (1)
+[clus12:52931] Failing at address: 0x800058
+[clus07:33818] *** Process received signal ***
+[clus07:33818] Signal: Segmentation fault (11)
+[clus07:33818] Signal code: Address not mapped (1)
+[clus07:33818] Failing at address: 0x57
+[clus07:33818] [ 0] /lib64/libpthread.so.0(+0xf370)[0x7f779f315370]
+[clus07:33818] [ 1] /soft/openmpi-3.0.0/lib/libmpi.so.40(ompi_request_default_wait+0x105)[0x7f779f56dda5]
+[clus07:33818] [ 2] /soft/openmpi-3.0.0/lib/libmpi.so.40(PMPI_Wait+0x5d)[0x7f779f5a3d0d]
+[clus07:33818] [ 3] ./lap_mpi[0x40144b]
+[clus07:33818] [ 4] /lib64/libc.so.6(__libc_start_main+0xf5)[0x7f779ef66b35]
+[clus07:33818] [ 5] ./lap_mpi[0x400b99]
+[clus07:33818] *** End of error message ***
+me: 4, source: 0, destination: 85, step: 84
+me: 3, source: 0, destination: 85, step: 84
+me: 6, source: 0, destination: 85, step: 84
+me: 7, source: 0, destination: 85, step: 84
+me: 8, source: 0, destination: 85, step: 84
+me: 5, source: 0, destination: 85, step: 84
+me: 1, source: 0, destination: 85, step: 84
+me: 10, source: 0, destination: 85, step: 84
+me: 9, source: 0, destination: 85, step: 84
+[clus12:52931] [ 0] /lib64/libpthread.so.0(+0xf370)[0x7f7f6db46370]
+[clus12:52931] [ 1] /soft/openmpi-3.0.0/lib/libmpi.so.40(ompi_request_default_wait+0x105)[0x7f7f6dd9eda5]
+[clus12:52931] [ 2] /soft/openmpi-3.0.0/lib/libmpi.so.40(PMPI_Wait+0x5d)[0x7f7f6ddd4d0d]
+[clus12:52931] [ 3] ./lap_mpi[0x401461]
+[clus12:52931] [ 4] /lib64/libc.so.6(__libc_start_main+0xf5)[0x7f7f6d797b35]
+[clus12:52931] [ 5] ./lap_mpi[0x400b99]
+[clus12:52931] *** End of error message ***
+[clus11][[10109,1],10][btl_tcp_endpoint.c:591:mca_btl_tcp_endpoint_recv_blocking] [clus10][[10109,1],8][btl_tcp_endpoint.c:591:mca_btl_tcp_endpoint_recv_blocking] recv(20, 0/8) failed: Connection reset by peer (104)recv(17, 0/8) failed: Connection reset by peer (104)
+
+[clus11.hpc.local:63410] pml_ob1_sendreq.c:191 FATAL
+[clus10.hpc.local:28175] pml_ob1_sendreq.c:191 FATAL
+-------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+-------------------------------------------------------
+[clus10][[10109,1],7][btl_tcp_endpoint.c:591:mca_btl_tcp_endpoint_recv_blocking] recv(16, 0/8) failed: Connection reset by peer (104)
+[clus10.hpc.local:28172] pml_ob1_sendreq.c:191 FATAL
+[clus10.hpc.local:28178] pml_ob1_sendreq.c:191 FATAL
+[clus10][[10109,1],9][btl_tcp_endpoint.c:591:mca_btl_tcp_endpoint_recv_blocking] recv(17, 0/8) failed: Connection reset by peer (104)
+--------------------------------------------------------------------------
+mpirun noticed that process rank 0 with PID 0 on node clus07 exited on signal 11 (Segmentation fault).
+--------------------------------------------------------------------------

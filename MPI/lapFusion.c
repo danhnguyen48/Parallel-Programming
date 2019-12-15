@@ -56,7 +56,6 @@ float laplace_step(float *in, float *out, int n, int nprocs, int me, bool isInne
   return error;
 }
 
-
 void laplace_init(float *in, int n, int nprocs, int me)
 {
   int i;
