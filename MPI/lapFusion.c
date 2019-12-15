@@ -42,7 +42,7 @@ float laplace_step(float *in, float *out, int n, int nprocs, int me, bool isInne
     if (isInner == false) step--;
   }
 
-  printf("me: %d, source: %d, destination: %d, step: %d\n",me,source,destination,step);
+//  printf("me: %d, source: %d, destination: %d, step: %d\n",me,source,destination,step);
 
   int ri = block_size*n; // above row of sub matrix
   int rf = (block_size+1)*n; // below row of sub matrix
@@ -94,6 +94,7 @@ int main(int argc, char** argv)
   float *A, *temp;
 
   MPI_Request firstRowRequest, lastRowRequest;
+  MPI_Request firstRowSendRequest, lastRowSendRequest;
   MPI_Status firstRowStatus, lastRowStatus;
 
   int err, me, nprocs;
@@ -132,24 +133,25 @@ int main(int argc, char** argv)
     iter++;
     if (me > 0) {
       // send first row and receive last row from the previous processor
-      MPI_Send(A, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD);
+      MPI_Isend(A, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD, &firstRowSendRequest);
       MPI_Irecv(A + block_size*n, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD, &firstRowRequest);
-
-      // calculate inner values other than me = 0 in waiting time
-      my_error= laplace_step (A, temp, n, nprocs, me, true);
-
-      MPI_Wait(&firstRowRequest, &firstRowStatus);
     }
     if (me < nprocs - 1) {
       // send last row and receive first row from the next processor
       MPI_Irecv(A + (block_size+1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD, &lastRowRequest);
-      MPI_Send(A + (block_size-1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD);
+      MPI_Isend(A + (block_size-1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD, &lastRowSendRequest);
+    }
 
-      // calculate inner values of me = 0 in waiting time
-      if (me == 0) my_error= laplace_step (A, temp, n, nprocs, me, true);
+    // calculate inner values other than me = 0 in waiting time
+    my_error= laplace_step (A, temp, n, nprocs, me, true);
 
+    if (me != 0) {
+      MPI_Wait(&firstRowRequest, &firstRowStatus);      
+    }
+    if (me != nprocs - 1) {
       MPI_Wait(&lastRowRequest, &lastRowStatus);
     }
+
     // have to calculate my_error by finding max_error because we already have my_error from calculating inner above
     my_error= max_error(my_error, laplace_step (A, temp, n, nprocs, me, false), 0);
     float *swap= A; A=temp; temp= swap; // swap pointers A & temp
