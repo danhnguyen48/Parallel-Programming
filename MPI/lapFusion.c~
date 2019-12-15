@@ -28,6 +28,8 @@ float laplace_step(float *in, float *out, int n, int nprocs, int me, bool isInne
   int destination = isInner == true ? block_size - 1 : block_size;
   int step = isInner == true ? 1 : block_size - 1;
 
+  printf("source: %d, destination: %d, step: %d\n",source,destination,step);
+
   // Check if me == fisrt matrix, source = 1 | if isInner, source should be 2
   // me == last matrix, destination = block_size - 1 | if isInner, destination should be block_size - 2
   // other cases, i should be from 0 to the end | if isInner, i should be from 1 to the end - 1
@@ -36,13 +38,9 @@ float laplace_step(float *in, float *out, int n, int nprocs, int me, bool isInne
   // if inner => should be step 1, outer => should do only 2 loops those are 0 and block_size - 1
   if (me == 0) {
     source++;
-    if (isInner == false) step--;
   } else if (me == nprocs - 1) {
     destination--;
-    if (isInner == false) step--;
   }
-
-  printf("me: %d, source: %d, destination: %d, step: %d\n",me,source,destination,step);
 
   int ri = block_size*n; // above row of sub matrix
   int rf = (block_size+1)*n; // below row of sub matrix
