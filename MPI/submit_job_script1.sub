@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH --job-name=test1
+#SBATCH --output=result1.txt
+#SBATCH -N 3 # number of nodes
+#SBATCH -n 16 # number of total cores
+#SBATCH –-distribution=cyclic
+#SBATCH --partition=nodo.q
+#SBATCH --exclusive
+#SBATCH --nodelist=clus[06,07,08]
+
+module load openmpi/3.0.0
+module add gcc/8.2.0
+
+mpicc lapFusion.c -o lap_mpi -lm -lmpi
+mpirun -n 16 ./lap_mpi 16384

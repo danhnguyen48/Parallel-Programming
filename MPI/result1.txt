@@ -1,0 +1,31 @@
+Processor 15 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 12 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 10 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 14 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 13 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 9 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 11 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 2 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 4 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 0 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 6 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 1 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 5 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 3 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 8 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 7 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+mpirun: Forwarding signal 18 to job
+--------------------------------------------------------------------------
+ORTE has lost communication with a remote daemon.
+
+  HNP daemon   : [[6804,0],0] on node clus05
+  Remote daemon: [[6804,0],1] on node clus06
+
+This is usually due to either a failure of the TCP network
+connection to the node, or possibly an internal failure of
+the daemon itself. We cannot recover from this failure, and
+therefore will terminate the job.
+--------------------------------------------------------------------------
+slurmstepd: error: *** JOB 22381 ON clus05 CANCELLED AT 2019-12-16T23:40:22 ***
+mpirun: abort is already in progress...hit ctrl-c again to forcibly terminate
+
