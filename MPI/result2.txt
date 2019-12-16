@@ -1,0 +1,18 @@
+Processor 1 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 0 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 12 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 14 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 11 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 15 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 13 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 2 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 4 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 6 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 8 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 7 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 3 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 5 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 9 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Processor 10 is running Jacobi relaxation Calculation: 1024 x 16384 mesh, maximum of 1000 iterations
+Total Iterations: 1000, ERROR: 0.015556
+Total seconds the program took: 828.614110
