@@ -78,7 +78,6 @@ int main(int argc, char** argv)
 
   float *A, *temp;
 
-  MPI_Request firstRowRequest, lastRowRequest;
   MPI_Status firstRowStatus, lastRowStatus;
 
   int err, me, nprocs;
@@ -119,14 +118,12 @@ int main(int argc, char** argv)
     if (me > 0) {
       // send first row and receive last row from the previous processor
       MPI_Send(A, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD);
-      MPI_Irecv(A + block_size*n, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD, &firstRowRequest);
-      MPI_Wait(&firstRowRequest, &firstRowStatus);
+      MPI_Recv(A + block_size*n, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD, &firstRowStatus);
     }
     if (me < nprocs - 1) {
       // send last row and receive first row from the next processor
-      MPI_Irecv(A + (block_size+1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD, &lastRowRequest);
+      MPI_Recv(A + (block_size+1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD, &lastRowStatus);
       MPI_Send(A + (block_size-1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD);
-      MPI_Wait(&lastRowRequest, &lastRowStatus);
     }
     my_error= laplace_step (A, temp, n, nprocs, me);   
     float *swap= A; A=temp; temp= swap; // swap pointers A & temp
@@ -140,8 +137,7 @@ int main(int argc, char** argv)
   } else if (me == 0) {
     float receiver;
     for (int iMe=1; iMe<nprocs; iMe++) {
-      MPI_Irecv(&receiver, 1, MPI_FLOAT, iMe, 0, MPI_COMM_WORLD, &lastRowRequest);
-      MPI_Wait(&lastRowRequest, &lastRowStatus);
+      MPI_Recv(&receiver, 1, MPI_FLOAT, iMe, 0, MPI_COMM_WORLD, &lastRowStatus);
       my_error = max_error(my_error, 0, receiver);
     }
   }
