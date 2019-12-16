@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 #include <stdbool.h>
+#include <omp.h>
 
 float stencil ( float v1, float v2, float v3, float v4)
 {
@@ -45,7 +46,7 @@ float laplace_step(float *in, float *out, int n, int nprocs, int me, bool isInne
   int ri = block_size*n; // above row of sub matrix
   int rf = (block_size+1)*n; // below row of sub matrix
 
-  #pragma omp for
+  #pragma omp for nowait
   for ( i=source; i < destination; i+=step )
     for ( j=1; j < n-1; j++ )
     {
@@ -133,31 +134,40 @@ int main(int argc, char** argv)
     while ( my_error > tol*tol && iter < iter_max )
     {
       iter++;
-      if (me > 0) {
-        // send first row and receive last row from the previous processor
-        MPI_Isend(A, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD, &firstRowSendRequest);
-        MPI_Irecv(A + block_size*n, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD, &firstRowRequest);
-      }
-      if (me < nprocs - 1) {
-        // send last row and receive first row from the next processor
-        MPI_Irecv(A + (block_size+1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD, &lastRowRequest);
-        MPI_Isend(A + (block_size-1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD, &lastRowSendRequest);
+      #pragma omp master
+      {
+        if (me > 0) {
+          // send first row and receive last row from the previous processor
+          MPI_Isend(A, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD, &firstRowSendRequest);
+          MPI_Irecv(A + block_size*n, n, MPI_FLOAT, me - 1, 0, MPI_COMM_WORLD, &firstRowRequest);
+        }
+        if (me < nprocs - 1) {
+          // send last row and receive first row from the next processor
+          MPI_Irecv(A + (block_size+1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD, &lastRowRequest);
+          MPI_Isend(A + (block_size-1)*n, n, MPI_FLOAT, me + 1, 0, MPI_COMM_WORLD, &lastRowSendRequest);
+        }
       }
 
       // calculate inner values in waiting time
       my_error= laplace_step (A, temp, n, nprocs, me, true);
 
-      if (me != 0) {
-        MPI_Wait(&firstRowRequest, &firstRowStatus);      
-      }
-      if (me != nprocs - 1) {
-        MPI_Wait(&lastRowRequest, &lastRowStatus);
+      #pragma omp master
+      {
+        if (me != 0) {
+          MPI_Wait(&firstRowRequest, &firstRowStatus);      
+        }
+        if (me != nprocs - 1) {
+          MPI_Wait(&lastRowRequest, &lastRowStatus);
+        }      
       }
 
       // have to calculate my_error by finding max_error because we already have my_error from calculating inner above
       my_error= max_error(my_error, laplace_step (A, temp, n, nprocs, me, false), 0);
       float *swap= A; A=temp; temp= swap; // swap pointers A & temp
-      MPI_Barrier(MPI_COMM_WORLD);
+      #pragma omp master
+      {
+        MPI_Barrier(MPI_COMM_WORLD);
+      }
     }
 
     #pragma omp master
