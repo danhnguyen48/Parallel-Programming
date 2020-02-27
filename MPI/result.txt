@@ -1,50 +1,16 @@
-Processor 23 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Processor 22 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Hello world from omp thread 0
-Processor 14 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 18 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 20 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 16 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Processor 21 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Hello world from omp thread 0
-Processor 12 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Processor 17 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 13 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Hello world from omp thread 0
-Processor 19 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 15 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 8 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 9 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 0 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Processor 5 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Hello world from omp thread 0
-Processor 2 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 4 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 3 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 7 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 6 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 10 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 11 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Processor 1 is running Jacobi relaxation Calculation: 341 x 8192 mesh, maximum of 1000 iterations
-Hello world from omp thread 0
-Total Iterations: 0, ERROR: 0.015554
-Total seconds the program took: 140.690840
+Processor 15 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 13 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 14 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 12 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 4 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 2 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 0 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 7 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 6 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 10 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 9 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 5 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 8 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 11 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 3 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
+Processor 1 is running Jacobi relaxation Calculation: 2048 x 32768 mesh, maximum of 1000 iterations
