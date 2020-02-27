@@ -1,0 +1,16 @@
+#!/bin/bash
+#SBATCH --job-name=openmpi-1-3
+#SBATCH --output=result.txt
+#SBATCH -N 6 # number of nodes
+#SBATCH -n 32 # number of total cores
+#SBATCH –-distribution=cyclic
+#SBATCH --partition=nodo.q
+#SBATCH --exclusive
+
+module load openmpi/3.0.0
+module add gcc/8.2.0
+
+mpicc lapFusion.c -o lap_mpi -lm -lmpi
+mpirun -n 32 ./lap_mpi 8192
+
+

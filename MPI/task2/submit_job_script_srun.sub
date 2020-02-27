@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH --job-name=openmpi
+#SBATCH --output=result-%j.txt
+#SBATCH -N 2 # number of nodes
+#SBATCH -n 64 # number of total cores
+#SBATCH --partition=queue
+
+module load intel_mpi
+
+mpicc lapFusion.c -o lap_mpi -lm -lmpi -std=c99
+srun --mpi=pmi2 ./lap_mpi 4096 500
+
+
